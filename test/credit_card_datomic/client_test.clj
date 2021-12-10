@@ -8,8 +8,7 @@
     (is (= {:client/name "Foo"
             :client/cpf  "400.111.222-30"
             :client/card []}
-           (dissoc (new-client "Foo"
-                               "400.111.222-30") :client/id)))
+           (dissoc (new-client "Foo" "400.111.222-30") :client/id)))
     (is (not (nil? (:client/id (new-client "Foo"
                                            "400.111.222-30"))))))
   (testing "Schema not create"
