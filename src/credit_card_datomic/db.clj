@@ -10,56 +10,39 @@
 (defn delete-db []
   (d/delete-database db-uri))
 
-; SCHEMA CREDIT CARD
-; card-id uuid
-; card-number string
-; Expiration Date string
-; cvv number
-
-; SCHEMA CLIENT
-; client-id uuid
-; cpf string
-; name  string
-; cards  many list
-
-
-(def schema [ ; CARD
-             {:db/ident       :card/id
-              :db/valueType   :db.type/uuid
-              :db/cardinality :db.cardinality/one
-              :db/unique      :db.unique/identity}
-             {:db/ident       :card/number
-              :db/valueType   :db.type/string
-              :db/cardinality :db.cardinality/one}
-             {:db/ident       :card/expiration-date
-              :db/valueType   :db.type/string
-              :db/cardinality :db.cardinality/one}
-             {:db/ident       :card/cvv
-              :db/valueType   :db.type/long
-              :db/cardinality :db.cardinality/one}
-             ; CLIENT
-             {:db/ident       :client/id
-              :db/valueType   :db.type/uuid
-              :db/cardinality :db.cardinality/one
-              :db/unique      :db.unique/identity}
-             {:db/ident       :client/name
-              :db/valueType   :db.type/string
-              :db/cardinality :db.cardinality/one}
-             {:db/ident       :client/cpf
-              :db/valueType   :db.type/string
-              :db/cardinality :db.cardinality/one}
-             {:db/ident       :client/card
-              :db/valueType   :db.type/ref
-              :db/cardinality :db.cardinality/many}])
-
-(defn create-schema! [conn]
-  (d/transact conn schema))
-
 (def conn (open-db))
 
-(create-schema! conn)
+(defn create-schema! [schema]
+  (d/transact conn schema))
 
-(delete-db)
+(defn upsert-on-db!
+  [data]
+  (d/transact conn data))
+
+(defn all-data!
+  ([sent-key]
+   (all-data! sent-key (d/db conn)))
+  ([sent-key db]
+   (d/q '[:find [(pull ?entity [*]) ...]
+          :in $ ?key
+          :where [?entity ?key]] db sent-key)))
+
+(defn one-item!
+  ([wanted-key wanted-data]
+   (one-item! wanted-key wanted-data (d/db conn)))
+  ([wanted-key wanted-data db]
+   (d/pull db '[*] [wanted-key wanted-data])))
+
+(defn many-itens!
+  ([wanted-key wanted-data]
+   (many-itens! wanted-key wanted-data (d/db conn)))
+  ([wanted-key wanted-data db]
+   (d/q '[:find [(pull ?entity [*]) ...]
+          :in $ ?key ?data
+          :where [?entity ?key ?data]]
+        db wanted-key wanted-data)))
+
+; (delete-db)
 
 
 
