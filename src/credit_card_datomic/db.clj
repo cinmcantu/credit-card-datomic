@@ -48,7 +48,7 @@
              {:db/ident       :client/cpf
               :db/valueType   :db.type/string
               :db/cardinality :db.cardinality/one}
-             {:db/ident       :client/cvv
+             {:db/ident       :client/card
               :db/valueType   :db.type/ref
               :db/cardinality :db.cardinality/many}])
 
@@ -59,7 +59,7 @@
 
 (create-schema! conn)
 
-;(delete-db)
+(delete-db)
 
 
 
