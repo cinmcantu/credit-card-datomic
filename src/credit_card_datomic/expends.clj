@@ -14,7 +14,7 @@
              (s/optional-key :expend/category) s/Str
              (s/optional-key :expend/value)    BigDecimal
              (s/optional-key :expend/date)     java.util.Date
-             (s/optional-key :expend/card)     [c.credit-card/Card]})
+             (s/optional-key :expend/card)     c.credit-card/Card})
 
 
 (def expend-schema [{:db/ident       :expend/id
@@ -37,33 +37,28 @@
 (c.db/create-schema! expend-schema)
 
 (s/defn new-expend :- Expend
-  [category value card]
+  [category value]
   {:expend/id       (uuid)
    :expend/category category
    :expend/value    value
-   :expend/date     (t/java.util.Date.)
-   :expend/card     card})
+   :expend/date     (t/java.util.Date.)})
+
+(def card3 (c.credit-card/new-card "5555 4444 3333 2222" 123 "10/28"))
+(c.credit-card/add-credit-cards! [card3])
+
+(def expend1 (new-expend "food" 100.00M))
+(def expend2 (new-expend "food" 60.00M))
 
 (s/defn add-expends!
   [expends :- [Expend]]
   (c.db/upsert-on-db! expends))
 
-(s/defn all-expends []
+(s/defn add-card-on-expend!
+  [expend card]
+  (c.db/upsert-on-db! [[:db/add [:expend/id (:expend/id expend)]
+                        :expend/card
+                        [:card/id (:card/id card)]]]))
+
+(s/defn all-expends! []
   (c.db/all-data! :expend/id))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
