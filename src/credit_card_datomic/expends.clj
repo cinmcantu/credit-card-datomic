@@ -25,7 +25,10 @@
                    :db/cardinality :db.cardinality/one}
                   {:db/ident       :card/cvv
                    :db/valueType   :db.type/long
-                   :db/cardinality :db.cardinality/one}])
+                   :db/cardinality :db.cardinality/one}
+                  {:db/ident       :card/expends
+                   :db/valueType   :db.type/ref
+                   :db/cardinality :db.cardinality/many}])
 
 (c.db/create-schema! card-schema)
 
@@ -42,6 +45,12 @@
 
 (s/defn all-cards []
   (c.db/all-data! :card/id))
+
+(s/defn add-expends-on-card!
+  [card expend]
+  (c.db/upsert-on-db! [[:db/add [:card/id (:card/id card)]
+                        :card/expends
+                        [:expend/id (:expend/id expend)]]]))
 
 
 

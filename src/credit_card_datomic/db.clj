@@ -41,7 +41,6 @@
           :in $ ?key ?data
           :where [?entity ?key ?data]]
         db wanted-key wanted-data)))
-
 ; (delete-db)
 
 
