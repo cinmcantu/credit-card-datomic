@@ -6,7 +6,7 @@
 
 (s/set-fn-validation! true)
 
-(defn uudi [] (java.util.UUID/randomUUID))
+(defn uuid [] (java.util.UUID/randomUUID))
 
 (def Card {:card/id                               s/Uuid
            (s/optional-key :card/number)          s/Str
@@ -31,7 +31,7 @@
 
 (s/defn new-card :- Card
   [number cvv exp-date]
-  {:card/id              (uudi)
+  {:card/id              (uuid)
    :card/number          number
    :card/cvv             cvv
    :card/expiration-date exp-date})
@@ -39,6 +39,9 @@
 (s/defn add-credit-cards!
   [cards :- [Card]]
   (c.db/upsert-on-db! cards))
+
+(s/defn all-cards []
+  (c.db/all-data! :card/id))
 
 
 

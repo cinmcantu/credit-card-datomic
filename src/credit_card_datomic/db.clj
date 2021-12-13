@@ -42,6 +42,18 @@
           :where [?entity ?key ?data]]
         db wanted-key wanted-data)))
 
+(defn clients-expends!
+  ([sent-client-id]
+   (clients-expends! sent-client-id (d/db conn)))
+  ([sent-client-id db]
+   (d/q '[:find [(pull ?expend [*])...]
+          :in $ ?client-id
+          :where [?client :client/id ?client-id]
+          [?client :client/card ?card]
+          [?expend :expend/card ?card]]
+        db sent-client-id)))
+
+
 ; (delete-db)
 
 
