@@ -13,7 +13,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
     <orderEntry type="library" name="Leiningen: clojure-complete:0.2.5" level="project" />
+    <orderEntry type="library" name="Leiningen: clojure.java-time:0.3.2" level="project" />
     <orderEntry type="library" name="Leiningen: com.datomic/datomic-lucene-core:3.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: com.datomic/datomic-pro:1.0.6344" level="project" />
     <orderEntry type="library" name="Leiningen: com.datomic/memcache-asg-java-client:1.1.0.31" level="project" />

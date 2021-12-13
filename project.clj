@@ -7,5 +7,6 @@
                                    :creds :gpg}}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [com.datomic/datomic-pro "1.0.6344"]
-                 [prismatic/schema "1.2.0"]]
+                 [prismatic/schema "1.2.0"]
+                 [clojure.java-time "0.3.2"]]
   :repl-options {:init-ns credit-card-datomic.core})

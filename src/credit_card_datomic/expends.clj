@@ -1,59 +1,55 @@
-(ns credit-card-datomic.credit-card
+(ns credit-card-datomic.expends
   (:use clojure.pprint)
   (:require [schema.core :as s]
             [credit-card-datomic.db :as c.db]
-            [datomic.api :as d]))
+            [datomic.api :as d]
+            [credit-card-datomic.credit-card :as c.credit-card]
+            [java-time :as t]))
 
 (s/set-fn-validation! true)
 
 (defn uuid [] (java.util.UUID/randomUUID))
 
-(def Card {:card/id                               s/Uuid
-           (s/optional-key :card/number)          s/Str
-           (s/optional-key :card/cvv)             Long
-           (s/optional-key :card/expiration-date) s/Str})
-
-(def card-schema [{:db/ident       :card/id
-                   :db/valueType   :db.type/uuid
-                   :db/cardinality :db.cardinality/one
-                   :db/unique      :db.unique/identity}
-                  {:db/ident       :card/number
-                   :db/valueType   :db.type/string
-                   :db/cardinality :db.cardinality/one}
-                  {:db/ident       :card/expiration-date
-                   :db/valueType   :db.type/string
-                   :db/cardinality :db.cardinality/one}
-                  {:db/ident       :card/cvv
-                   :db/valueType   :db.type/long
-                   :db/cardinality :db.cardinality/one}
-                  {:db/ident       :card/expends
-                   :db/valueType   :db.type/ref
-                   :db/cardinality :db.cardinality/many}])
-
-(c.db/create-schema! card-schema)
-
-(s/defn new-card :- Card
-  [number cvv exp-date]
-  {:card/id              (uuid)
-   :card/number          number
-   :card/cvv             cvv
-   :card/expiration-date exp-date})
-
-(s/defn add-credit-cards!
-  [cards :- [Card]]
-  (c.db/upsert-on-db! cards))
-
-(s/defn all-cards []
-  (c.db/all-data! :card/id))
-
-(s/defn add-expends-on-card!
-  [card expend]
-  (c.db/upsert-on-db! [[:db/add [:card/id (:card/id card)]
-                        :card/expends
-                        [:expend/id (:expend/id expend)]]]))
+(def Expend {:expend/id                        s/Uuid
+             (s/optional-key :expend/category) s/Str
+             (s/optional-key :expend/value)    BigDecimal
+             (s/optional-key :expend/date)     java.util.Date
+             (s/optional-key :expend/card)     [c.credit-card/Card]})
 
 
+(def expend-schema [{:db/ident       :expend/id
+                     :db/valueType   :db.type/uuid
+                     :db/cardinality :db.cardinality/one
+                     :db/unique      :db.unique/identity}
+                    {:db/ident       :expend/category
+                     :db/valueType   :db.type/string
+                     :db/cardinality :db.cardinality/one}
+                    {:db/ident       :expend/value
+                     :db/valueType   :db.type/bigdec
+                     :db/cardinality :db.cardinality/one}
+                    {:db/ident       :expend/date
+                     :db/valueType   :db.type/instant
+                     :db/cardinality :db.cardinality/one}
+                    {:db/ident       :expend/card
+                     :db/valueType   :db.type/ref
+                     :db/cardinality :db.cardinality/one}])
 
+(c.db/create-schema! expend-schema)
+
+(s/defn new-expend :- Expend
+  [category value card]
+  {:expend/id       (uuid)
+   :expend/category category
+   :expend/value    value
+   :expend/date     (t/java.util.Date.)
+   :expend/card     card})
+
+(s/defn add-expends!
+  [expends :- [Expend]]
+  (c.db/upsert-on-db! expends))
+
+(s/defn all-expends []
+  (c.db/all-data! :expend/id))
 
 
 
